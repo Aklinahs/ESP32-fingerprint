@@ -1,67 +1,17 @@
 #include <WiFi.h>
 #include <WebServer.h>
-
-#include <time.h>
-#include <HTTPUpdate.h>
 #include <AutoConnect.h>
-#include <HTTPClient.h>
-
-//Timer Library
-#include <SimpleTimer.h>
-
-//NTP Client and RTC Libraries
-#include <NTPClient.h>
-#include <WiFiUdp.h>
-
-WebServer Server;
-
-AutoConnect Portal(Server);
-AutoConnectConfig Config;
-
-//Creating WiFi NTP Client Objects
-WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP);
-
-time_t prevDisplay = 0;
-SimpleTimer timer;
-
-//Declaring Web Link as a String (Link = URL + PostData)
-String Link;
 
 //Fingerprint Scanner Device Token for Each Department
-const char *device_token  = "04-001-444";
-
-//Declaring URL (Computer IP or Server Domain) as a String
-int    HTTP_PORT   = 80;
-String HTTP_METHOD = "GET";
-String httpString = "http://";
-char WebHostName[] = "www.botz-svr3.com";
-String WebPathName   = "/CrewMate_HRM/deviceManagement_getAllData";
-
-
-String URL = httpString + WebHostName + ":" + HTTP_PORT + WebPathName;
-
-//Declaring PostData as a String (Fingerprint ID & Token Number will be Sent to Server by Using this Variable)
-String PostData;
-
-String FirmwareURL = "http://botz-svr3.com/CrewMate_HRM/FirmwareServlet//opt/CrewMate/Device_Firmware/";
-String FirmwareExtension = ".bin";
-
-//Setting Up Variables
-int FingerID = 0;
-int t1;
-int t2;
-int rssi;
-int signalStength;
+const char *device_token  = "04-001-004";
 
 //Status Check Variables
 int portalStatus = 0;
 
-bool device_Mode = false; //0 for Enrollment 1 for Attendace
-bool firstConnect = false;
-
-uint8_t id;
-unsigned long previousMillis = 0;
+//sets up the necessary objects for using the AutoConnect library with an instance of the WebServer class.
+WebServer Server;
+AutoConnect Portal(Server);
+AutoConnectConfig Config;
 
 void rootPage() {
   String  content =
@@ -95,47 +45,44 @@ void loop() {
 ///http://172.217.28.1/_ac
 
 void connectToWiFi() {
-  //Config.title = "CM-FSv2 Portal";
-  Config.autoReconnect = true;
+
+  Config.autoReconnect = true; //the library will automatically attempt to reconnect to a previously configured WiFi network if the connection is lost.
   Config.apid = "FingerPrint";
   Config.psk = "12345678";
   Config.hostName = device_token;
-
-  Config.portalTimeout = 2000;
-  Config.retainPortal = false;
+  Config.portalTimeout = 2000; //captive portal will be active before it times out. If the user does not connect to a WiFi network within this timeout period, the captive portal will close.
+  Config.retainPortal = false; //captive portal page will be cleared after the device successfully connects to the Wi-Fi network.
   Portal.config(Config);
   Server.on("/", rootPage);
 
   Serial.println("Creating portal and trying to connect...");
 
+//AutoConnect portal has successfully connected to a WiFi network.
   if (Portal.begin()) {
     Serial.println("WiFi connected: " + WiFi.localIP().toString());
-    //connectedToWiFiMsg();
+    Serial.println(WiFi.getHostname());
     portalStatus = 1;
 
-  Serial.println(WiFi.getHostname());
-
+//If the ESP32 is in AP mode, disconnects the soft AP and disables the AP mode.
   if (WiFi.getMode() & WIFI_AP) {
       WiFi.softAPdisconnect(true);
       WiFi.enableAP(false);
     }
   }
 
+// failed connection attempt
   if (portalStatus == 0) {
-    //hotspotIcon();
     Config.portalTimeout = 120000;
     Portal.config(Config);
     if (Portal.begin()) {
       portalStatus = 1;
       Serial.println("WiFi connected: " + WiFi.localIP().toString());
-
-    Serial.println(WiFi.getHostname());
+      Serial.println(WiFi.getHostname());
 
       if (WiFi.getMode() & WIFI_AP) {
         WiFi.softAPdisconnect(true);
         WiFi.enableAP(false);
       }
-
     }
 
   }
