@@ -23,6 +23,9 @@
 #include "SD.h"
 #include "SPI.h"
 
+//Timer Library
+#include <SimpleTimer.h>
+
 //Declaring SPI Pins for SD Card Module and Creating a New Class for SD SPI
 #define SD_MOSI      13
 #define SD_MISO      27
@@ -52,9 +55,14 @@ const int buzzer_pin = 2;
 //Status Check Variables
 int wifiOrEthernetStatus;
 int portalStatus = 0;
+int checkMode_no_server = 0;
+int fingerprintScannerStatus;
+int R503LEDStatus;
 
 //Setting Up Variables
 int FingerID = 0;
+int t1;
+int t2;
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
@@ -84,6 +92,9 @@ RTC_DS1307 DS1307_RTC;
 //SD card File object
 File myFile;
 uint8_t cardType;
+
+//Creating Timer Object
+SimpleTimer timer;
 
 
 void rootPage() {
@@ -223,11 +234,22 @@ void setup() {
   sdMountMsg();
   delay(10000);
 
+  //Setting Up Timers
+  timer.setInterval(5000L, CheckMode); //Check the Mode for every 5 Sec
+  t1 = timer.setInterval(2000L, ChecktoAddID); //Check the Website for every 2 Sec for a new Fingerprint ID
+  t2 = timer.setInterval(2000L, ChecktoDeleteID); //Check the Website for every 2 Sec to Delete Fingerprint ID
+
+  //Execute CheckMode Function
+  CheckMode();
+  checkMode_no_server = 1;
+
+  fingerprintScannerStatus = 1;
+  R503LEDStatus = 1;
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-
+  timer.run();
 }
 
 ///http://172.217.28.1/_ac
@@ -288,6 +310,22 @@ void connectToWiFi() {
 
   delay(1000);
 }
+
+void CheckMode() {
+  Serial.println("Check Mode");
+  printOLED("5 S", 1000);
+}
+
+void ChecktoAddID() {
+  Serial.println("Check to Add ID");
+  printOLED("2-1 S", 1000);
+}
+
+void ChecktoDeleteID() {
+  Serial.println("Check to Delete ID");
+  printOLED("2-2 S", 1000);
+}
+
 
 //Display Messages
 void logoMsg() {
