@@ -1,13 +1,13 @@
-/*
-  Rui Santos
-  Complete project details at https://RandomNerdTutorials.com/esp32-microsd-card-arduino/
-  
-  This sketch can be found at: Examples > SD(esp32) > SD_Test
-*/
-
 #include "FS.h"
 #include "SD.h"
 #include "SPI.h"
+
+#define SCK  14
+#define MISO  27
+#define MOSI  13
+#define CS  15
+
+SPIClass spi = SPIClass(VSPI);
 
 void listDir(fs::FS &fs, const char * dirname, uint8_t levels){
   Serial.printf("Listing directory: %s\n", dirname);
@@ -99,7 +99,7 @@ void appendFile(fs::FS &fs, const char * path, const char * message){
     return;
   }
   if(file.print(message)){
-      Serial.println("Message appended");
+    Serial.println("Message appended");
   } else {
     Serial.println("Append failed");
   }
@@ -168,7 +168,9 @@ void testFileIO(fs::FS &fs, const char * path){
 
 void setup(){
   Serial.begin(115200);
-  if(!SD.begin(5)){
+  spi.begin(SCK, MISO, MOSI);
+
+  if (!SD.begin(CS,spi)) {
     Serial.println("Card Mount Failed");
     return;
   }
