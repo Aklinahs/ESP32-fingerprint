@@ -64,6 +64,17 @@ int FingerID = 0;
 int t1;
 int t2;
 
+//Declaring URL (Computer IP or Server Domain) as a String
+int    HTTP_PORT   = 80;
+String HTTP_METHOD = "GET";
+String httpString = "http://";
+char WebHostName[] = "www.botz-svr3.com";
+String WebPathName   = "/CrewMate_HRM/deviceManagement_getAllData";
+String URL = httpString + WebHostName + ":" + HTTP_PORT + WebPathName;
+
+String Link; //Web Link as a String (Link = URL + PostData)
+String PostData; //Declaring PostData as a String (Fingerprint ID & Token Number will be Sent to Server by Using this Variable)
+
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
@@ -236,8 +247,8 @@ void setup() {
 
   //Setting Up Timers
   timer.setInterval(5000L, CheckMode); //Check the Mode for every 5 Sec
-  t1 = timer.setInterval(2000L, ChecktoAddID); //Check the Website for every 2 Sec for a new Fingerprint ID
-  t2 = timer.setInterval(2000L, ChecktoDeleteID); //Check the Website for every 2 Sec to Delete Fingerprint ID
+  //t1 = timer.setInterval(2000L, ChecktoAddID); //Check the Website for every 2 Sec for a new Fingerprint ID
+  //t2 = timer.setInterval(2000L, ChecktoDeleteID); //Check the Website for every 2 Sec to Delete Fingerprint ID
 
   //Execute CheckMode Function
   CheckMode();
@@ -313,7 +324,24 @@ void connectToWiFi() {
 
 void CheckMode() {
   Serial.println("Check Mode");
-  printOLED("5 S", 1000);
+  if (WiFi.isConnected() && wifiOrEthernetStatus == 1 ) {
+    HTTPClient http;
+    int httpCode;
+
+    http.setConnectTimeout(2000);
+    PostData = "?Check_mode=get_mode&device_token=" + String(device_token);
+    Link = URL + PostData;
+    Serial.println(Link);
+
+    http.begin(Link); //Initiate HTTP request
+    httpCode = http.GET();
+
+    String payload = http.getString();
+
+    Serial.print("httpCode is: ");
+    Serial.println(httpCode);
+    Serial.println(payload);
+  }
 }
 
 void ChecktoAddID() {
