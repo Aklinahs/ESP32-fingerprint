@@ -49,7 +49,7 @@ SPIClass SPISD(HSPI);
 
 
 //Fingerprint Scanner Device Token for Each Department
-const char *device_token  = "04-001-004";
+const char *device_token  = "04-001-001";
 const int buzzer_pin = 2;
 
 //Status Check Variables
@@ -58,6 +58,7 @@ int portalStatus = 0;
 int checkMode_no_server = 0;
 int fingerprintScannerStatus;
 int R503LEDStatus;
+int serverDownTimerDisableMode;
 
 //Setting Up Variables
 int FingerID = 0;
@@ -341,6 +342,22 @@ void CheckMode() {
     Serial.print("httpCode is: ");
     Serial.println(httpCode);
     Serial.println(payload);
+
+    if (payload.substring(0, 4) == "mode") {
+      String dev_mode_string_value = payload.substring(4); // Putting the mode number into a String variable
+      int dev_mode_int_value = dev_mode_string_value.toInt(); //String to int conversion
+
+      if (dev_mode_int_value == 0) { // Enrolment Mode
+        serverDownTimerDisableMode = 1;
+      }
+      if (dev_mode_int_value == 1) { // Attendence mode
+        serverDownTimerDisableMode = 2;
+      }
+    
+    }
+
+  
+
   }
 }
 
