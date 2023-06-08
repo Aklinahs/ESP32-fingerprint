@@ -98,6 +98,22 @@ void loop() {
   drawSdJpeg("/images/7sIdea.jpg", 15, 0);     // This draws a jpeg pulled off the SD Card
   delay(5000);
 
+  //tft.fillScreen(TFT_WHITE);
+  tft.setTextColor(TFT_BLACK);
+  tft.drawString("Hellow world", 10, 10, 4);
+  delay(5000);
+  tft.drawString("Bye", 10, 10, 4);
+
+  delay(5000);
+
+  tft.fillScreen(TFT_WHITE);
+  tft.drawString("Hellow2 world", 10, 10, 4);
+  delay(5000);
+  tft.drawString("3 world", 10, 10, 4);
+  delay(5000);
+
+
+
 }
 
 //####################################################################################################

@@ -66,7 +66,43 @@ uint8_t readnumber(void) {
 
 void loop()                     // run over and over again
 {
-  Serial.println("Ready to enroll a fingerprint!");
+  Serial.println("color test");
+  delay(5000);
+  Serial.println("blue breathing");
+  R503BlueBreathing();
+  delay(5000);
+  Serial.println("red breathing");
+  R503RedBreathing();
+  delay(5000);
+  Serial.println("purple breathing");
+  R503PurpleBreathing();
+  delay(5000);
+  Serial.println("green breathing");
+  R503GreenBreathing();
+  delay(5000);
+  Serial.println("yellow breathing");
+  R503YellowBreathing();
+  delay(5000);
+  Serial.println("cyan breathing");
+  R503CyanBreathing();
+  delay(5000);
+  Serial.println("blue flashing");
+  R503BlueFlashing();
+  delay(5000);
+  Serial.println("red flashing");
+  R503RedFlashing();
+  delay(5000);
+  Serial.println("purple flashing");
+  R503PurpleFlashing();
+  delay(5000);
+  Serial.println("green flashing");
+  R503GreenFlashing();
+  delay(5000);
+  Serial.println("yello flashing");
+  R503YellowFlashing();
+  delay(5000);
+  Serial.println("cyan flashing");
+  R503CyanFlashing();
   Serial.println("Please type in the ID # (from 1 to 127) you want to save this finger as...");
   id = readnumber();
   if (id == 0) {// ID #0 not allowed, try again!
@@ -217,4 +253,62 @@ uint8_t getFingerprintEnroll() {
   }
 
   return true;
+}
+
+void R503BlueBreathing() {
+  finger.LEDcontrol(FINGERPRINT_LED_BREATHING, 100, FINGERPRINT_LED_BLUE);
+}
+void R503RedBreathing() {
+  finger.LEDcontrol(FINGERPRINT_LED_BREATHING, 500, FINGERPRINT_LED_RED);
+
+}
+void R503PurpleBreathing() {
+  finger.LEDcontrol(FINGERPRINT_LED_BREATHING, 100, FINGERPRINT_LED_PURPLE);
+
+}
+void R503GreenBreathing() {
+  finger.LEDcontrol(FINGERPRINT_LED_BREATHING, 500, 0x04);
+}
+void R503YellowBreathing() {
+  finger.LEDcontrol(FINGERPRINT_LED_BREATHING, 500, 0x05);
+}
+void R503CyanBreathing() {
+  finger.LEDcontrol(FINGERPRINT_LED_BREATHING, 500, 0x06);
+
+}
+void R503BlueFlashing() {
+  finger.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_BLUE, 0);
+
+}
+void R503RedFlashing() {
+  finger.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_RED, 0);
+
+}
+void R503PurpleFlashing() {
+  finger.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, FINGERPRINT_LED_PURPLE, 0);
+
+}
+void R503GreenFlashing() {
+  finger.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, 0x04, 0);
+
+}
+void R503YellowFlashing() {
+  finger.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, 0x05, 0);
+
+}
+void R503CyanFlashing() {
+  finger.LEDcontrol(FINGERPRINT_LED_FLASHING, 25, 0x06, 0);
+
+}
+void R503BlueOn() {
+  finger.LEDcontrol(FINGERPRINT_LED_ON, 0, FINGERPRINT_LED_BLUE);
+
+}
+void R503RedOn() {
+  finger.LEDcontrol(FINGERPRINT_LED_ON, 0, FINGERPRINT_LED_RED);
+
+}
+void R503PurpleOn() {
+  finger.LEDcontrol(FINGERPRINT_LED_ON, 0, FINGERPRINT_LED_PURPLE);
+
 }
